@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+name: hello_app
+version: 1.0.0
+description: sample helm chart
+maintainers:
+  - name: Anastasiia Minkova
+    email: n.kim24535@gmail.com
+appVersion: 1.0.0

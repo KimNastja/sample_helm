@@ -1,0 +1,29 @@
+app:
+  name: hello_app
+  standName:  
+  secretName: hello_secret
+  branch: develop
+  history:
+    ttl: 60
+
+image:
+  app: hellonginxdemos/hello
+  tag:  latest
+  
+service:
+  internalPort: 80
+  externalPort: 80
+
+sample: 
+  env: 123
+
+config:
+  env: 456
+
+limits:
+  cpu: "2"
+  memory: "4Gi"
+requests:
+  cpu: "100m"
+  memory: "260Mi" 
+

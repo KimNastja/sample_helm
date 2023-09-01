@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: {{ .Values.app.name }}-pod
+      labels:
+        {{- include "app.selectorLabels" . | nindent 8 }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        branch: "{{ .Values.app.branch }}"
+    spec:
+      containers:
+      - env:
+        {{- include "hello_app.EnvStartup" . | indent 8 }} 
+        image: "{{ .Values.image.app }}:{{ .Values.image.tag }}"
+        imagePullPolicy: Always
+        name: {{ .Values.app.name }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.limits.cpu }}
+            memory: {{ .Values.limits.memory }}
+          requests:
+            cpu: {{ .Values.requests.cpu }}
+            memory: {{ .Values.requests.memory }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.service.internalPort }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 15
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.service.internalPort }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 15
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        volumeMounts:
+        - name: app-temp
+          mountPath: /tmp
+      volumes:
+      - name: app-temp
+        emptyDir: {}
