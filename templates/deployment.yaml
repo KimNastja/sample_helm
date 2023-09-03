@@ -32,7 +32,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
       - env:
-        {{- include "hello_app.EnvStartup" . | indent 8 }} 
+        {{- include "hello-app.EnvStartup" . | indent 8 }} 
         image: "{{ .Values.image.app }}:{{ .Values.image.tag }}"
         imagePullPolicy: Always
         name: {{ .Values.app.name }}

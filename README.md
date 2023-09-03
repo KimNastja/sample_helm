@@ -21,5 +21,5 @@ helm template .
 Для установки чарта необходимо выполнить команду
 
 ```sh
-helm install hello_app .
+helm install hello-app .
 ```

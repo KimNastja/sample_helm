@@ -18,7 +18,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
     "--eto nabor nastroek"
 {{- end -}}
 
-{{- define "hello_app.EnvStartup" }}
+{{- define "hello-app.EnvStartup" }}
 - name: SAMPLE_OPTS
   value: {{ template "app.app_Opts" . }}
 
