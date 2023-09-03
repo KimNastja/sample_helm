@@ -28,12 +28,12 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 - name: SAMPLE_SECRET_ENV
   valueFrom:
     secretKeyRef:
-      name: "{{ .Values.app.secretName }}"
+      name: "{{ .Values.app.name }}"
       key: SECRET_ENV
  
 - name: SAMPLE_CONFIG_ENV
   valueFrom:
     configMapKeyRef:
-      name: "{{ .Values.app.Name }}"
+      name: "{{ .Values.app.name }}"
       key: CONFIG_ENV
 {{- end }}

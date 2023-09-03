@@ -25,7 +25,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchExpressions:
-              - key: helm.sh/chart  # указываем ключ лейбла
+              - key: app.kubernetes.io/instance # указываем ключ лейбла
                 operator: In
                 values:
                 - {{ .Values.app.name }}       # указываем значение - имя чарта
@@ -59,13 +59,13 @@ spec:
           periodSeconds: 10
           failureThreshold: 15
         securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          privileged: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
+          allowPrivilegeEscalation: true
+          # capabilities:
+          #   drop:
+          #   - ALL
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
         volumeMounts:
         - name: app-temp
           mountPath: /tmp
