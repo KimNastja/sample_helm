@@ -14,6 +14,16 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "app.standOpts" -}}
+  {{- if has .Values.app.standName (list "dev") -}}
+    "eto dev stand "
+  {{- else if has .Values.app.standName (list "test") -}}
+    "eto test stand "
+  {{- else -}}
+    "standName ne ukazan"
+  {{- end -}}
+{{- end -}}
+
 {{- define "app.app_Opts" -}}                                     # здесь может быть блок настроек от вашего приложения
     "--eto nabor nastroek"
 {{- end -}}
@@ -22,6 +32,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 
 - name: SAMPLE_OPTS                                               # блок переменных из шаблона
   value: {{ template "app.app_Opts" . }}
+
+- name: STAND_OPTS                                               # блок переменных из шаблона
+  value: {{ template "app.standOpts" . }}
 
 - name: SAMPLE_ENV                                                # блок переменных из values
   value: "{{ .Values.sample.env }}"
@@ -38,3 +51,5 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
       name: "{{ .Values.app.name }}"
       key: CONFIG_ENV
 {{- end }}
+
+
