@@ -1,37 +1,38 @@
-{{- define "app.chart" -}}
+{{- define "app.chart" -}}                                        # формируем красивое имя чарта с версией
 {{- printf "%s-%s" .Chart.Name .Chart.Version }}
 {{- end }}
 
-{{- define "app.selectorLabels" -}}
+{{- define "app.selectorLabels" -}}                               # определяем лейблы по которым стыкуются ресурсы
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "app.labels" -}}
+{{- define "app.labels" -}}                                       # добавляем больше лейблов
 helm.sh/chart: {{ include "app.chart" . }}
 {{ include "app.selectorLabels" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{- define "app.app_Opts" -}}
+{{- define "app.app_Opts" -}}                                     # здесь может быть блок настроек от вашего приложения
     "--eto nabor nastroek"
 {{- end -}}
 
-{{- define "hello-app.EnvStartup" }}
-- name: SAMPLE_OPTS
+{{- define "hello-app.EnvStartup" }}                              # блок с описанием переменных окружения
+
+- name: SAMPLE_OPTS                                               # блок переменных из шаблона
   value: {{ template "app.app_Opts" . }}
 
-- name: SAMPLE_ENV
+- name: SAMPLE_ENV                                                # блок переменных из values
   value: "{{ .Values.sample.env }}"
 
-- name: SAMPLE_SECRET_ENV
+- name: SAMPLE_SECRET_ENV                                         # блок переменных из секрета
   valueFrom:
     secretKeyRef:
       name: "{{ .Values.app.name }}"
       key: SECRET_ENV
  
-- name: SAMPLE_CONFIG_ENV
+- name: SAMPLE_CONFIG_ENV                                         # блок переменных из конфигмапы
   valueFrom:
     configMapKeyRef:
       name: "{{ .Values.app.name }}"
