@@ -1,13 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: Deployment        # тип ресурса деплоймент
 metadata:
   name: {{ .Values.app.name }}
-  labels:
+  labels:               # лейблы которые нужны для стыковки с сервисом
     {{- include "app.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.app.replicas }}
+  replicas: {{ .Values.app.replicas }}  # количество реплик пода
   selector:
-    matchLabels:
+    matchLabels:        # определяет с какими лейблами стыковаться
       {{- include "app.selectorLabels" . | nindent 6 }}
   strategy:
     type: RollingUpdate # выбор стратегии выкатки пода: создаёт новый под и не переключает трафик, пока новый под не получит статус ready
@@ -16,7 +16,7 @@ spec:
       name: {{ .Values.app.name }}-pod
       labels:
         {{- include "app.selectorLabels" . | nindent 8 }}
-      annotations:
+      annotations:  # это метаданные с дополнительной информацией, связанной с ресурсом или объектом. Аннотации состоят из пар ключ-значение. Каждая пара используется для описания метаданных ресурса или предоставления дополнительной информации
         rollme: {{ randAlphaNum 5 | quote }}
         branch: "{{ .Values.app.branch }}"
     spec:
@@ -30,7 +30,7 @@ spec:
                 values:
                 - {{ .Values.app.name }}       # указываем значение - имя чарта
             topologyKey: "kubernetes.io/hostname"
-      containers:
+      containers:                   # характеристики создаваемого пода
       - env:
         {{- include "hello-app.EnvStartup" . | indent 8 }} 
         image: "{{ .Values.image.app }}:{{ .Values.image.tag }}"
@@ -40,10 +40,10 @@ spec:
         - containerPort: {{ .Values.service.internalPort }}
           protocol: TCP
         resources:
-          limits:
+          limits:                   # максимум ресурсов, выделяемых контейнеру
             cpu: {{ .Values.limits.cpu }}
             memory: {{ .Values.limits.memory }}
-          requests:
+          requests:                 #минимальное количество ресурсов необходимых для создания пода
             cpu: {{ .Values.requests.cpu }}
             memory: {{ .Values.requests.memory }}
         livenessProbe:

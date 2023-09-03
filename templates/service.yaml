@@ -1,14 +1,14 @@
 ---
 apiVersion: v1
-kind: Service
+kind: Service                                              # тип ресурса сервис
 metadata:
   name: {{ .Values.app.name }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
-spec:
+spec:                                                      # спецификация ресурса, особенности
   ports:
-  - port: {{ .Values.service.externalPort }}
+  - port: {{ .Values.service.externalPort }}               # порт самого сервиса
     protocol: TCP
-    targetPort: {{ .Values.service.internalPort }}
-  selector:
+    targetPort: {{ .Values.service.internalPort }}         # порт контейнера
+  selector:                                                # описывает лейбл по которому выбираются поды
     {{- include "app.selectorLabels" . | nindent 4 }}
