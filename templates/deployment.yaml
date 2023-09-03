@@ -5,13 +5,13 @@ metadata:
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.app.replicas }}
   selector:
     matchLabels:
       {{- include "app.selectorLabels" . | nindent 6 }}
   strategy:
-    type: Recreate
-  template:
+    type: RollingUpdate # выбор стратегии выкатки пода: создаёт новый под и не переключает трафик, пока новый под не получит статус ready
+  template:             # описание шаблона для создания подов
     metadata:
       name: {{ .Values.app.name }}-pod
       labels:
@@ -20,6 +20,16 @@ spec:
         rollme: {{ randAlphaNum 5 | quote }}
         branch: "{{ .Values.app.branch }}"
     spec:
+      affinity:       # для отказоустойчивости запретим двум подам запускаться на одной ноде
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: helm.sh/chart  # указываем ключ лейбла
+                operator: In
+                values:
+                - {{ .Values.app.name }}       # указываем значение - имя чарта
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - env:
         {{- include "hello_app.EnvStartup" . | indent 8 }} 
