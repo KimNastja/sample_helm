@@ -18,7 +18,7 @@ spec:
         {{- include "app.selectorLabels" . | nindent 8 }}
       annotations:  # это метаданные с дополнительной информацией, связанной с ресурсом или объектом. Аннотации состоят из пар ключ-значение. Каждая пара используется для описания метаданных ресурса или предоставления дополнительной информации
         rollme: {{ randAlphaNum 5 | quote }}
-        branch: "{{ .Values.app.branch }}"
+        branch: "{{ .Values.app.branch }}"  # это полезная переменная, можно с CI прокидывать имя ветки, чтобы знать, что задеплоилось 
     spec:
       affinity:       # для отказоустойчивости запретим двум подам запускаться на одной ноде
         podAntiAffinity:
@@ -32,7 +32,7 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:                   # характеристики создаваемого пода
       - env:
-        {{- include "hello-app.EnvStartup" . | indent 8 }} 
+        {{- include "hello-app.EnvStartup" . | indent 8 }}    # сюда заезжают переменные из темплейта (_helpers.tpl)
         image: "{{ .Values.image.app }}:{{ .Values.image.tag }}"
         imagePullPolicy: Always
         name: {{ .Values.app.name }}
@@ -46,29 +46,29 @@ spec:
           requests:                 #минимальное количество ресурсов необходимых для создания пода
             cpu: {{ .Values.requests.cpu }}
             memory: {{ .Values.requests.memory }}
-        livenessProbe:
+        livenessProbe:              # проверяет, что наш под жив, регулярно тыкая в порт
           tcpSocket:
             port: {{ .Values.service.internalPort }}
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 15
-        readinessProbe:
+        readinessProbe:             # проверяет, что под готов к работе
           tcpSocket:
             port: {{ .Values.service.internalPort }}
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 15
-        securityContext:
-          allowPrivilegeEscalation: true
-          # capabilities:
-          #   drop:
-          #   - ALL
-          privileged: true
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
-        volumeMounts:
-        - name: app-temp
+        securityContext:            # настройки безопасности пода
+          allowPrivilegeEscalation: true  # разрешает повышать права в поде
+          capabilities:             # указываем, что поду не нужны никакие CAPS (повышение прав по секьюрити)
+            drop:
+            - ALL
+          privileged: true          # разрешает запуск от рута (стоит true, потому что иначе nginx ругается)
+          readOnlyRootFilesystem: false  # можно запретить писать данные в контейнер
+          runAsNonRoot: false       # включить запуск от случайного пользователя
+        volumeMounts:               
+        - name: app-temp            # добавим в пустую папку tmp 
           mountPath: /tmp
       volumes:
-      - name: app-temp
+      - name: app-temp              # добавляем пустой volume
         emptyDir: {}
