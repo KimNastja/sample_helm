@@ -67,8 +67,8 @@ spec:
           readOnlyRootFilesystem: false  # можно запретить писать данные в контейнер
           runAsNonRoot: false       # включить запуск от случайного пользователя
         volumeMounts:               
-        - name: app-temp            # добавим в пустую папку tmp 
-          mountPath: /tmp
+        - name: some-data            # здесь мог бы быть ваш volume
+          mountPath: /some-data
       volumes:
-      - name: app-temp              # добавляем пустой volume
+      - name: some-data              
         emptyDir: {}
