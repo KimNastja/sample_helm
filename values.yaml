@@ -28,9 +28,10 @@ requests:                          ### блок про реквесты (мин�
   memory: "260Mi"                  # соответственно sheduler назначит под на ноду, где есть столько ресурсов
 
 hpa:                               ### блок про hpa ###
-  enabled: true                    
+  enable: true                    
   min_pod_count: 2
   max_pod_count: 6
 
-serviceMonitor:                    ### блок про serviceMonitor ###
-  enabled: true
+pdb:
+  enable: true
+  minAvailable: 2
